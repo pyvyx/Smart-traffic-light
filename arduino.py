@@ -7,4 +7,4 @@ def write(x):
     time.sleep(0.150)
 
 
-write("0100")
+write("1000")

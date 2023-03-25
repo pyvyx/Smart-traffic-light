@@ -108,7 +108,6 @@ void loop()
   // 0 - 1 - 0 - 0
   // 1 - 2 - 3 - 4
   String str = Serial.readString();
-  Serial.println(str);
   int nums[4] = {0};
   nums[0] = str[0] - 48;
   nums[1] = str[1] - 48;
