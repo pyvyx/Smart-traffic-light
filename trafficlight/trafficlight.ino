@@ -10,12 +10,14 @@
 #define R4 8
 #define G4 9
 
-#define On(light) digitalWrite(light, HIGH)
-#define Off(light) digitalWrite(light, LOW)
+#define On(led) digitalWrite(led, HIGH)
+#define Off(led) digitalWrite(led, LOW)
 
 static uint32_t prevTime = millis();
 static bool done = false;
-bool force = true;
+static bool force = true;
+static bool forced1 = false;
+static bool forced2 = false;
 void Intersec1(bool forceSwitch)
 {
   if(forceSwitch || (millis() - prevTime >= CYCLE_TIME && done))
@@ -33,6 +35,7 @@ void Intersec1(bool forceSwitch)
     prevTime = millis();
     done = false;
     force = true;
+    forced1 = false;
   }
 }
 
@@ -54,6 +57,7 @@ void Intersec2(bool forceSwitch)
     prevTime = millis();
     done = true;
     force = true;
+    forced2 = false;
   }  
 }
 
@@ -92,6 +96,7 @@ void AllBlink()
   delay(500);
 }
 
+
 void loop() 
 {
   while(!Serial.available())
@@ -109,14 +114,16 @@ void loop()
   nums[2] = str[2] - 48;
   nums[3] = str[3] - 48;
 
-  if(nums[0] == 1 || nums[2] == 1)
+  if((nums[0] == 1 || nums[2] == 1) && !forced1)
   {
     Intersec1(force);
     force = false;
+    forced1 = true;
   }
-  else if(nums[1] == 1 || nums[3] == 1)
+  else if((nums[1] == 1 || nums[3] == 1) && !forced2)
   {
     Intersec2(force);
     force = false;
+    forced2 = true;
   }
 }
