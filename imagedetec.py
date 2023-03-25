@@ -40,7 +40,7 @@ outputs = net.forward(output_layers)
 boxes = []
 confidences = []
 class_ids = []
-cars = 0
+
 # Loop through each output prediction
 for output in outputs:
     # Loop through each detection in the output
@@ -51,7 +51,6 @@ for output in outputs:
         confidence = scores[class_id]
         # Filter out weak detections with low confidence scores
         if confidence > 0.5:
-            cars += 1
             # Scale the bounding box coordinates to match the original image size
             center_x = int(detection[0] * width)
             center_y = int(detection[1] * height)
