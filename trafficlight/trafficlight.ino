@@ -13,9 +13,10 @@
 #define On(light) digitalWrite(light, HIGH)
 #define Off(light) digitalWrite(light, LOW)
 
-uint32_t prevTime = millis();
-bool done = false;
-bool Intersec1(bool forceSwitch = false)
+static uint32_t prevTime = millis();
+static bool done = false;
+bool force = true;
+void Intersec1(bool forceSwitch)
 {
   if(forceSwitch || (millis() - prevTime >= CYCLE_TIME && done))
   {
@@ -23,21 +24,20 @@ bool Intersec1(bool forceSwitch = false)
     Off(G4);
     On(R2);
     On(R4);
-    // delay(RED_DELAY);
+    delay(RED_DELAY);
     
     Off(R1);
     Off(R3);
     On(G1);
-    On(G3); 
+    On(G3);
     prevTime = millis();
     done = false;
-    return true;
+    force = true;
   }
-  return false;
 }
 
 
-bool Intersec2(bool forceSwitch = false)
+void Intersec2(bool forceSwitch)
 {
   if(forceSwitch || (millis() - prevTime >= CYCLE_TIME && !done))
   {
@@ -45,7 +45,7 @@ bool Intersec2(bool forceSwitch = false)
     Off(G3);
     On(R1);
     On(R3);
-    //delay(RED_DELAY);
+    delay(RED_DELAY);
 
     Off(R2);
     Off(R4);
@@ -53,9 +53,8 @@ bool Intersec2(bool forceSwitch = false)
     On(G4);
     prevTime = millis();
     done = true;
-    return true;
+    force = true;
   }  
-  return false;
 }
 
 
@@ -93,17 +92,13 @@ void AllBlink()
   delay(500);
 }
 
-
-void DefaultControl()
-{
-  Intersec1();
-  Intersec2();
-}
-
 void loop() 
 {
   while(!Serial.available())
-    DefaultControl();
+  {
+    Intersec1(false);
+    Intersec2(false);
+  }
 
   // 0 - 1 - 0 - 0
   // 1 - 2 - 3 - 4
@@ -115,11 +110,13 @@ void loop()
   nums[3] = str[3] - 48;
 
   if(nums[0] == 1 || nums[2] == 1)
-  { 
-    while(!Intersec1(true));
+  {
+    Intersec1(force);
+    force = false;
   }
   else if(nums[1] == 1 || nums[3] == 1)
   {
-    while(!Intersec2(true));
+    Intersec2(force);
+    force = false;
   }
 }
